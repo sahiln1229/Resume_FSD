@@ -85,7 +85,7 @@ export const Hero = () => {
                         <Magnetic>
                             <Link href="/dashboard">
                                 <Button variant="outline" size="lg" className="h-20 px-12 text-lg font-black uppercase tracking-widest border-border/40 bg-white/5 backdrop-blur-md hover:bg-white/10">
-                                    Neural Portal
+                                    Dashboard Analysis
                                 </Button>
                             </Link>
                         </Magnetic>

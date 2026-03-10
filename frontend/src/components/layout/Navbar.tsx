@@ -36,10 +36,10 @@ export const Navbar = () => {
                     </Link>
 
                     <div className="hidden md:flex items-center gap-12">
-                        {['Features', 'Intelligence', 'Network'].map((item) => (
+                        {['Features', 'Intelligence', 'Profile'].map((item) => (
                             <Link
                                 key={item}
-                                href={`/#${item.toLowerCase()}`}
+                                href={item === 'Profile' ? '/dashboard' : `/#${item.toLowerCase()}`}
                                 className="text-xs font-black uppercase tracking-[0.2em] text-secondary hover:text-accent transition-colors relative group"
                             >
                                 {item}
@@ -48,15 +48,20 @@ export const Navbar = () => {
                         ))}
                     </div>
 
-                    <div className="hidden md:flex items-center gap-6">
-                        <Link href="/upload">
+                    <div className="hidden md:flex items-center gap-4">
+                        <Link href="/login">
                             <Magnetic>
                                 <Button className="h-14 px-8 rounded-2xl bg-accent hover:bg-accent/90 text-white font-black uppercase tracking-widest shadow-3d group">
-                                    Launch Interface
+                                    Login
                                     <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Magnetic>
                         </Link>
+                        <Magnetic>
+                            <Button variant="outline" onClick={() => { }} className="h-14 px-8 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-secondary font-black uppercase tracking-widest">
+                                Logout
+                            </Button>
+                        </Magnetic>
                     </div>
 
                     <button

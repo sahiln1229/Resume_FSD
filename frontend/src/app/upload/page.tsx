@@ -91,7 +91,7 @@ export default function UploadPage() {
                                     >
                                         <Upload size={52} className="text-accent" />
                                     </motion.div>
-                                    <h3 className="text-2xl font-black text-foreground mb-4 tracking-tight">Sync Narrative Data</h3>
+                                    <h3 className="text-2xl font-black text-foreground mb-4 tracking-tight">Upload your resume</h3>
                                     <p className="text-secondary font-bold uppercase tracking-widest text-xs">Drop PDF or DOCX</p>
                                 </div>
                             ) : (
