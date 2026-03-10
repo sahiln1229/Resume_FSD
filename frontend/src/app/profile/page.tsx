@@ -51,6 +51,22 @@ const initialData: ProfileData = {
     certificate: null,
 };
 
+const InputField = ({ label, icon: Icon, placeholder, value, onChange, type = "text" }: any) => (
+    <div className="space-y-2">
+        <label className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] ml-2">{label}</label>
+        <div className="relative">
+            <Icon className="absolute left-6 top-1/2 -translate-y-1/2 text-accent/50" size={18} />
+            <input
+                type={type}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+                className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 focus:ring-2 focus:ring-accent focus:border-transparent outline-none text-foreground font-medium transition-all hover:bg-white/10"
+            />
+        </div>
+    </div>
+);
+
 export default function ProfilePage() {
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(true);
@@ -101,22 +117,6 @@ export default function ProfilePage() {
             setData({ ...data, certificate: e.target.files[0].name });
         }
     };
-
-    const InputField = ({ label, icon: Icon, placeholder, value, onChange, type = "text" }: any) => (
-        <div className="space-y-2">
-            <label className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] ml-2">{label}</label>
-            <div className="relative">
-                <Icon className="absolute left-6 top-1/2 -translate-y-1/2 text-accent/50" size={18} />
-                <input
-                    type={type}
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={placeholder}
-                    className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 focus:ring-2 focus:ring-accent focus:border-transparent outline-none text-foreground font-medium transition-all hover:bg-white/10"
-                />
-            </div>
-        </div>
-    );
 
     return (
         <main className="min-h-screen pt-40 pb-20 px-6 relative overflow-hidden bg-transparent">
