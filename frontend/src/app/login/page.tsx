@@ -49,7 +49,7 @@ export default function LoginPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-6xl font-black text-foreground mb-4 tracking-tighter"
                     >
-                        {isLogin ? 'ACCESS' : 'INITIALIZE'} <span className="text-gradient">PORTAL</span>
+                        {isLogin ? 'LOGIN' : 'SIGNUP'} <span className="text-gradient">PORTAL</span>
                     </motion.h1>
                     <p className="text-secondary font-medium">
                         {isLogin ? 'Reconnect to your diagnostic profile' : 'Deploy your new career intelligence identity'}
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
                                 <Magnetic>
                                     <Button className="w-full h-18 text-lg font-black uppercase tracking-[0.2em] shadow-3d group bg-accent hover:bg-accent/90">
-                                        {isLogin ? 'Authenticate' : 'Initialize'}
+                                        {isLogin ? 'Login' : 'Signup'}
                                         <ArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
                                     </Button>
                                 </Magnetic>
@@ -144,7 +144,7 @@ export default function LoginPage() {
                         onClick={() => setIsLogin(!isLogin)}
                         className="text-secondary font-medium hover:text-accent transition-colors"
                     >
-                        {isLogin ? "Don't have a profile? " : "Already initialized? "}
+                        {isLogin ? "Don't have a profile? " : "Already have an account? "}
                         <span className="text-foreground font-black uppercase tracking-widest ml-2 underline underline-offset-4 decoration-accent/50 hover:decoration-accent transition-all">
                             {isLogin ? 'Register Now' : 'Login Portal'}
                         </span>
