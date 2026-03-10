@@ -29,6 +29,14 @@ export default function LoginPage() {
         name: ''
     });
 
+    const handleAuth = () => {
+        // Save auth info for profile auto-fill
+        localStorage.setItem('auth_user_info', JSON.stringify({
+            name: formData.name,
+            email: formData.email
+        }));
+    };
+
     return (
         <main className="min-h-screen pt-40 pb-20 px-6 relative overflow-hidden bg-transparent">
             <Scene3D />
@@ -75,6 +83,8 @@ export default function LoginPage() {
                                             <input
                                                 type="text"
                                                 placeholder="Enter full name"
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                 className="w-full h-16 bg-white/5 border border-border rounded-2xl pl-16 pr-6 focus:ring-2 focus:ring-accent focus:border-transparent outline-none text-foreground font-medium transition-all"
                                             />
                                         </div>
@@ -88,6 +98,8 @@ export default function LoginPage() {
                                         <input
                                             type="email"
                                             placeholder="Enter email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             className="w-full h-16 bg-white/5 border border-border rounded-2xl pl-16 pr-6 focus:ring-2 focus:ring-accent focus:border-transparent outline-none text-foreground font-medium transition-all"
                                         />
                                     </div>
@@ -103,13 +115,15 @@ export default function LoginPage() {
                                         <input
                                             type="password"
                                             placeholder="••••••••"
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             className="w-full h-16 bg-white/5 border border-border rounded-2xl pl-16 pr-6 focus:ring-2 focus:ring-accent focus:border-transparent outline-none text-foreground font-medium transition-all"
                                         />
                                     </div>
                                 </div>
 
                                 <Magnetic>
-                                    <Link href="/profile" className="w-full">
+                                    <Link href="/profile" className="w-full" onClick={handleAuth}>
                                         <Button className="w-full h-18 text-lg font-black uppercase tracking-[0.2em] shadow-3d group bg-accent hover:bg-accent/90">
                                             {isLogin ? 'Login' : 'Signup'}
                                             <ArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />

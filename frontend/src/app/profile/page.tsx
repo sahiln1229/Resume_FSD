@@ -60,10 +60,19 @@ export default function ProfilePage() {
 
     // Load data from localStorage on mount
     useEffect(() => {
-        const saved = localStorage.getItem('user_profile_data');
-        if (saved) {
-            setData(JSON.parse(saved));
-            setIsEditing(false); // If data exists, show view mode first
+        const savedProfile = localStorage.getItem('user_profile_data');
+        const authInfo = localStorage.getItem('auth_user_info');
+
+        if (savedProfile) {
+            setData(JSON.parse(savedProfile));
+            setIsEditing(false);
+        } else if (authInfo) {
+            const { name, email } = JSON.parse(authInfo);
+            setData(prev => ({
+                ...prev,
+                name: name || '',
+                email: email || ''
+            }));
         }
     }, []);
 
