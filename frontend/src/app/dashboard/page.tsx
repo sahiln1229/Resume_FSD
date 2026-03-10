@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import {
     BarChart3,
@@ -10,7 +10,15 @@ import {
     Zap,
     TrendingUp,
     Download,
-    Sparkles
+    Sparkles,
+    CheckCircle2,
+    AlertCircle,
+    ArrowRight,
+    Search,
+    Type,
+    Layout,
+    Check,
+    X
 } from 'lucide-react';
 import {
     Radar,
@@ -22,6 +30,8 @@ import {
 import { Navbar } from '@/components/layout/Navbar';
 import PerspectiveCard from '@/components/ui/PerspectiveCard';
 import Magnetic from '@/components/ui/Magnetic';
+import Scene3D from '@/components/3d/Scene3D';
+import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
@@ -35,12 +45,35 @@ const data = [
     { subject: 'Impact', A: 82, fullMark: 100 },
 ];
 
+const improvedBullets = [
+    {
+        original: "Managed a team of developers to build web apps.",
+        improved: "Orchestrated a high-performance team of 8 engineers, delivering 4 mission-critical web applications with a 25% increase in deployment velocity.",
+        impact: "Leadership & Scalability"
+    },
+    {
+        original: "Used React to create responsive user interfaces.",
+        improved: "Optimized frontend architecture using Next.js and Tailwind CSS, achieving a 40% improvement in First Contentful Paint across all mobile platforms.",
+        impact: "Performance Optimization"
+    }
+];
+
+const grammarFixes = [
+    { error: "Experience in building...", correction: "Proven track record in architecting...", type: "Tone" },
+    { error: "Responsible for managing...", correction: "Spearheaded management of...", type: "Action Verb" },
+];
+
+const sectionFeedback = [
+    { section: "Experience", score: 88, feedback: "Highly quantitative and impact-driven. Minor formatting issues in early roles.", status: "Strong" },
+    { section: "Education", score: 95, feedback: "Clearly presented with relevant honors. Perfect layout.", status: "Elite" },
+    { section: "Skills", score: 72, feedback: "Good categorization, but missing several keywords found in Tier-1 descriptions.", status: "Improve" },
+];
+
 export default function DashboardPage() {
-    const containerRef = useRef(null);
     const scoreRef = useRef(null);
+    const [activeTab, setActiveTab] = useState('overview');
 
     useEffect(() => {
-        // Simple GSAP count-up animation for score
         gsap.fromTo(scoreRef.current,
             { innerText: 0 },
             {
@@ -57,9 +90,12 @@ export default function DashboardPage() {
     }, []);
 
     return (
-        <main ref={containerRef} className="min-h-screen pt-40 pb-20 px-6 relative overflow-hidden bg-transparent">
+        <main className="min-h-screen pt-40 pb-20 px-6 relative overflow-hidden bg-transparent">
+            <Scene3D />
             <Navbar />
+
             <div className="max-w-7xl mx-auto relative z-10">
+                {/* Header */}
                 <div className="flex flex-col md:flex-row items-end justify-between gap-8 mb-16">
                     <div>
                         <motion.div
@@ -75,7 +111,7 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             className="text-5xl md:text-7xl font-black text-foreground tracking-tighter"
                         >
-                            CORE <span className="text-gradient">DIAGNOSTICS</span>
+                            DASHBOARD <span className="text-gradient">ANALYSIS</span>
                         </motion.h1>
                     </div>
 
@@ -85,108 +121,210 @@ export default function DashboardPage() {
                         className="flex gap-4"
                     >
                         <Magnetic>
-                            <button className="h-16 px-8 rounded-2xl bg-white/5 border border-border text-foreground font-bold hover:bg-white/10 transition-all flex items-center gap-3">
-                                <Download size={20} />
+                            <button className="h-16 px-8 rounded-2xl bg-white/5 border border-white/10 text-foreground font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-3 shadow-3d">
+                                <Download size={20} className="text-accent" />
                                 Export Protocol
                             </button>
                         </Magnetic>
                     </motion.div>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="lg:col-span-2"
-                >
-                    <PerspectiveCard>
-                        <Card className="p-10 premium-card bg-card/40 backdrop-blur-xl border-border">
-                            <div className="flex items-center justify-between mb-12">
-                                <h3 className="text-2xl font-black text-foreground tracking-tight">Performance Matrix</h3>
-                                <div className="px-4 py-2 rounded-xl bg-accent/10 text-accent text-xs font-black uppercase tracking-widest border border-accent/20">Market Index: Elite</div>
-                            </div>
-                            <div className="h-[400px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-                                        <PolarGrid stroke="rgba(255,255,255,0.05)" />
-                                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#94A3B8', fontSize: 12, fontWeight: 'bold' }} />
-                                        <Radar
-                                            name="Score"
-                                            dataKey="A"
-                                            stroke="#3B82F6"
-                                            fill="#3B82F6"
-                                            fillOpacity={0.4}
-                                        />
-                                    </RadarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </Card>
-                    </PerspectiveCard>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                >
-                    <PerspectiveCard className="h-full">
-                        <Card className="p-10 premium-card h-full flex flex-col items-center justify-center text-center bg-card/40 backdrop-blur-xl border-border">
-                            <h3 className="text-xl font-black text-secondary uppercase tracking-[0.2em] mb-12">Composite Integrity</h3>
-                            <div className="relative w-64 h-64 flex items-center justify-center">
-                                <svg className="w-full h-full transform -rotate-90">
-                                    <circle cx="128" cy="128" r="110" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-white/5" />
-                                    <motion.circle
-                                        initial={{ strokeDashoffset: 691 }}
-                                        whileInView={{ strokeDashoffset: 691 * (1 - 0.85) }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 2, ease: "easeOut" }}
-                                        cx="128" cy="128" r="110" stroke="currentColor" strokeWidth="12" fill="transparent"
-                                        strokeDasharray="691" className="text-accent"
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span ref={scoreRef} className="text-7xl font-black text-foreground">85</span>
-                                    <span className="text-sm font-black text-secondary tracking-widest">/ 100</span>
-                                </div>
-                            </div>
-                            <p className="mt-12 text-secondary font-medium leading-relaxed">
-                                Your profile exceeds <span className="text-foreground font-bold">85%</span> of Tier-1 industry performance targets.
-                            </p>
-                        </Card>
-                    </PerspectiveCard>
-                </motion.div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {[
-                    { title: "Keywords", value: "92%", icon: Target, status: "Optimal" },
-                    { title: "Impact", value: "High", icon: Zap, status: "Advanced" },
-                    { title: "Network", value: "Strong", icon: Brain, status: "Sync" },
-                    { title: "Market", value: "Tier 1", icon: BarChart3, status: "Priority" }
-                ].map((stat, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        viewport={{ once: true }}
-                    >
+                {/* Main Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Left Column - Score & Matrix */}
+                    <div className="lg:col-span-4 space-y-8">
                         <PerspectiveCard>
-                            <Card className="p-8 premium-card bg-card/40 backdrop-blur-xl border-border group">
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-border flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
-                                        <stat.icon size={24} />
+                            <Card className="p-10 premium-card bg-card/60 backdrop-blur-3xl border-white/10 shadow-3d relative overflow-hidden group">
+                                <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/20 rounded-full blur-[100px] group-hover:bg-accent/40 transition-colors" />
+                                <h3 className="text-xs font-black text-secondary tracking-[0.3em] uppercase mb-12">Resume Integrity Score</h3>
+                                <div className="relative w-full aspect-square flex items-center justify-center">
+                                    <svg className="w-full h-full transform -rotate-90">
+                                        <circle cx="50%" cy="50%" r="42%" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
+                                        <motion.circle
+                                            initial={{ strokeDashoffset: '264%' }}
+                                            whileInView={{ strokeDashoffset: `${264 * (1 - 0.85)}%` }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 2, ease: "easeOut" }}
+                                            cx="50%" cy="50%" r="42%" stroke="currentColor" strokeWidth="8" fill="transparent"
+                                            strokeDasharray="264%" className="text-accent"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span ref={scoreRef} className="text-7xl font-black text-foreground">85</span>
+                                        <span className="text-[10px] font-black text-secondary tracking-[0.5em] uppercase">Status: Elite</span>
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-secondary-accent">{stat.status}</span>
                                 </div>
-                                <h4 className="text-sm font-black text-secondary uppercase tracking-widest mb-1">{stat.title}</h4>
-                                <div className="text-3xl font-black text-foreground">{stat.value}</div>
                             </Card>
                         </PerspectiveCard>
-                    </motion.div>
-                ))}
+
+                        <PerspectiveCard>
+                            <Card className="p-8 premium-card bg-card/60 backdrop-blur-3xl border-white/10 shadow-3d">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h3 className="text-xs font-black text-secondary tracking-[.3em] uppercase">Skill Gap Matrix</h3>
+                                    <Brain className="text-accent" size={16} />
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-between">
+                                        <span className="text-xs font-black text-green-500 uppercase tracking-widest">Matched Skills</span>
+                                        <span className="text-sm font-black text-foreground">14</span>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-between">
+                                        <span className="text-xs font-black text-red-500 uppercase tracking-widest">Missing Skills</span>
+                                        <span className="text-sm font-black text-foreground">6</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-6">
+                                        {['System Design', 'CI/CD', 'GraphQL', 'Redis', 'WebSockets', 'Kubernetes'].map((skill) => (
+                                            <span key={skill} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] font-black text-secondary uppercase tracking-widest hover:border-accent/40 transition-colors">
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </Card>
+                        </PerspectiveCard>
+                    </div>
+
+                    {/* Right Column - Analysis Tabs */}
+                    <div className="lg:col-span-8 space-y-8">
+                        <div className="flex gap-2 p-1.5 glass rounded-2xl border-white/10 w-fit">
+                            {['bullets', 'grammar', 'feedback'].map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
+                                        activeTab === tab ? "bg-accent text-white shadow-3d" : "text-secondary hover:text-foreground"
+                                    )}
+                                >
+                                    {tab === 'bullets' ? 'Bullet Optimizer' : tab === 'grammar' ? 'Grammar Fixes' : 'Section Feedback'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <PerspectiveCard>
+                                    <Card className="p-10 premium-card bg-card/60 backdrop-blur-3xl border-white/10 shadow-3d min-h-[600px]">
+                                        {activeTab === 'bullets' && (
+                                            <div className="space-y-12">
+                                                <div className="flex items-center gap-4 mb-8">
+                                                    <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                                                        <TrendingUp size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-black text-foreground tracking-tight">Impact Optimization</h3>
+                                                        <p className="text-xs font-black text-secondary tracking-widest uppercase">Converting activities to achievements</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-8">
+                                                    {improvedBullets.map((item, i) => (
+                                                        <div key={i} className="space-y-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="px-2 py-1 rounded bg-accent/10 border border-accent/20 text-[8px] font-black text-accent uppercase tracking-widest">
+                                                                    {item.impact}
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-white/5 border border-white/10 border-dashed">
+                                                                <div>
+                                                                    <div className="text-[10px] font-black text-red-500/50 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                                        <X size={10} /> Original
+                                                                    </div>
+                                                                    <p className="text-sm font-medium text-secondary">{item.original}</p>
+                                                                </div>
+                                                                <div className="relative">
+                                                                    <div className="text-[10px] font-black text-green-500/50 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                                        <CheckCircle2 size={10} /> Improved
+                                                                    </div>
+                                                                    <p className="text-sm font-bold text-foreground leading-relaxed">{item.improved}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'grammar' && (
+                                            <div className="space-y-12">
+                                                <div className="flex items-center gap-4 mb-8">
+                                                    <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                                                        <Type size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-black text-foreground tracking-tight">Linguistic Diagnostics</h3>
+                                                        <p className="text-xs font-black text-secondary tracking-widest uppercase">Syntax, Tone & Veracity Check</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    {grammarFixes.map((item, i) => (
+                                                        <div key={i} className="flex items-start gap-6 p-6 rounded-2xl bg-white/5 border border-white/10 group hover:border-accent/40 transition-colors">
+                                                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-secondary-accent shrink-0 font-black">
+                                                                {i + 1}
+                                                            </div>
+                                                            <div className="space-y-3 flex-1">
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className="text-[10px] font-black text-accent uppercase tracking-widest">{item.type}</span>
+                                                                    <div className="h-px bg-white/10 flex-1" />
+                                                                </div>
+                                                                <div className="flex flex-col md:flex-row gap-6 md:items-center">
+                                                                    <p className="text-sm text-secondary/60 line-through italic">{item.error}</p>
+                                                                    <ArrowRight className="text-accent shrink-0 hidden md:block" size={16} />
+                                                                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">{item.correction}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'feedback' && (
+                                            <div className="space-y-12">
+                                                <div className="flex items-center gap-4 mb-8">
+                                                    <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                                                        <Layout size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xl font-black text-foreground tracking-tight">Section Feedback</h3>
+                                                        <p className="text-xs font-black text-secondary tracking-widest uppercase">Structural Quality Analysis</p>
+                                                    </div>
+                                                </div>
+                                                <div className="grid gap-6">
+                                                    {sectionFeedback.map((item, i) => (
+                                                        <div key={i} className="p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden group">
+                                                            <div className="absolute top-0 right-0 p-8">
+                                                                <div className="text-4xl font-black text-white/5 group-hover:text-accent/10 transition-colors">{item.score}%</div>
+                                                            </div>
+                                                            <div className="flex items-center gap-3 mb-4">
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-accent">Section: {item.section}</span>
+                                                                <div className={cn(
+                                                                    "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
+                                                                    item.status === 'Strong' ? "bg-green-500/10 text-green-500" :
+                                                                        item.status === 'Elite' ? "bg-accent/10 text-accent" : "bg-red-500/10 text-red-500"
+                                                                )}>
+                                                                    {item.status}
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-sm font-medium text-secondary max-w-2xl leading-relaxed">
+                                                                {item.feedback}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </Card>
+                                </PerspectiveCard>
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+                </div>
             </div>
         </main>
     );
