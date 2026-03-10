@@ -1,17 +1,25 @@
 "use client";
 
 import { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, Sphere, MeshDistortMaterial, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 
 function AbstractShape({ position, color, speed, distort }: { position: [number, number, number], color: string, speed: number, distort: number }) {
     const mesh = useRef<THREE.Mesh>(null);
+    const { mouse } = useThree();
 
     useFrame((state) => {
         if (!mesh.current) return;
         const t = state.clock.getElapsedTime();
-        mesh.current.position.y += Math.sin(t * speed) * 0.002;
+
+        // Base floating animation
+        mesh.current.position.y = position[1] + Math.sin(t * speed) * 0.2;
+
+        // Mouse reaction (inertia follow)
+        mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, position[0] + mouse.x * 2, 0.05);
+        mesh.current.position.z = THREE.MathUtils.lerp(mesh.current.position.z, position[2] + mouse.y * 1.5, 0.05);
+
         mesh.current.rotation.x = Math.cos(t * speed) * 0.1;
         mesh.current.rotation.y = Math.sin(t * speed) * 0.1;
     });
@@ -27,7 +35,7 @@ function AbstractShape({ position, color, speed, distort }: { position: [number,
                     roughness={0.1}
                     metalness={0.9}
                     emissive={color}
-                    emissiveIntensity={0.2}
+                    emissiveIntensity={0.1}
                 />
             </Sphere>
         </Float>
@@ -43,10 +51,10 @@ export default function Scene3D() {
                 <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
                 <pointLight position={[-10, -10, -10]} intensity={0.5} />
 
-                <AbstractShape position={[-6, 3, 0]} color="#2563EB" speed={1.5} distort={0.4} />
-                <AbstractShape position={[7, -2, -2]} color="#06B6D4" speed={2} distort={0.3} />
+                <AbstractShape position={[-6, 3, 0]} color="#1E3A8A" speed={1.5} distort={0.4} />
+                <AbstractShape position={[7, -2, -2]} color="#3B82F6" speed={2} distort={0.3} />
                 <AbstractShape position={[-2, -5, 1]} color="#64748B" speed={1} distort={0.2} />
-                <AbstractShape position={[4, 5, -3]} color="#2563EB" speed={1.2} distort={0.5} />
+                <AbstractShape position={[4, 5, -3]} color="#1E3A8A" speed={1.2} distort={0.5} />
             </Canvas>
         </div>
     );

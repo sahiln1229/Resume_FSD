@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Scene3D from "@/components/3d/Scene3D";
+import ScrollWrapper from "@/components/layout/ScrollWrapper";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,8 +17,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ResumeAI | Next-Gen Career Intelligence",
-  description: "Elite ATS diagnostic engine and AI interview simulator.",
+  title: "ResumeAI | Futuristic Career Intelligence",
+  description: "Elite ATS diagnostic engine and AI interview simulator with interactive neural interface.",
 };
 
 export default function RootLayout({
@@ -27,12 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${poppins.variable} antialiased selection:bg-primary/30`}
+        className={`${inter.variable} ${poppins.variable} antialiased selection:bg-accent/30`}
       >
-        <Scene3D />
-        <div className="relative z-10">
-          {children}
-        </div>
+        <ScrollWrapper>
+          <CustomCursor />
+          <Scene3D />
+          <div className="relative z-10">
+            {children}
+          </div>
+        </ScrollWrapper>
       </body>
     </html>
   );
