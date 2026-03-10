@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import {
     BarChart3,
-    Target,
     Brain,
-    Zap,
     TrendingUp,
     Download,
     Sparkles,
@@ -18,7 +16,8 @@ import {
     Type,
     Layout,
     Check,
-    X
+    X,
+    MessageSquare
 } from 'lucide-react';
 import {
     Radar,
@@ -34,6 +33,7 @@ import Scene3D from '@/components/3d/Scene3D';
 import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import Link from 'next/link';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -121,10 +121,13 @@ export default function DashboardPage() {
                         className="flex gap-4"
                     >
                         <Magnetic>
-                            <button className="h-16 px-8 rounded-2xl bg-white/5 border border-white/10 text-foreground font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-3 shadow-3d">
-                                <Download size={20} className="text-accent" />
-                                Export Protocol
-                            </button>
+                            <Link href="/interview">
+                                <button className="h-16 px-8 rounded-2xl bg-accent hover:bg-accent/90 text-white font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-3d group">
+                                    <MessageSquare size={20} />
+                                    Interview Me
+                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </Link>
                         </Magnetic>
                     </motion.div>
                 </div>
