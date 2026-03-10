@@ -57,10 +57,10 @@ export const Navbar = () => {
                     </Link>
 
                     <div className="hidden md:flex items-center gap-12">
-                        {['Home', 'Features', 'Profile'].map((item) => (
+                        {['Home', 'Features', 'Dashboard', 'Profile'].map((item) => (
                             <Link
                                 key={item}
-                                href={item === 'Home' ? '/' : item === 'Profile' ? '/profile' : `/#${item.toLowerCase()}`}
+                                href={item === 'Home' ? '/' : item === 'Profile' ? '/profile' : item === 'Dashboard' ? '/dashboard' : `/#${item.toLowerCase()}`}
                                 className="text-xs font-black uppercase tracking-[0.2em] text-secondary hover:text-accent transition-colors relative group"
                             >
                                 {item}
@@ -107,10 +107,10 @@ export const Navbar = () => {
                         className="absolute top-full left-0 right-0 mt-4 mx-6 p-8 glass rounded-3xl border-white/10 md:hidden z-[101]"
                     >
                         <div className="flex flex-col gap-8">
-                            {['Home', 'Features', 'Profile'].map((item) => (
+                            {['Home', 'Features', 'Dashboard', 'Profile'].map((item) => (
                                 <Link
                                     key={item}
-                                    href={item === 'Home' ? '/' : item === 'Profile' ? '/profile' : `/#${item.toLowerCase()}`}
+                                    href={item === 'Home' ? '/' : item === 'Profile' ? '/profile' : item === 'Dashboard' ? '/dashboard' : `/#${item.toLowerCase()}`}
                                     className="text-lg font-black uppercase tracking-widest text-foreground hover:text-accent"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
