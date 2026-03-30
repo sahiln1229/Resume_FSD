@@ -16,7 +16,10 @@ import {
     FileText,
     Sparkles,
     ShieldCheck,
-    Save
+    Save,
+    Linkedin,
+    Wand2,
+    Loader2
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -26,6 +29,7 @@ import Magnetic from '@/components/ui/Magnetic';
 import PerspectiveCard from '@/components/ui/PerspectiveCard';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import axios from 'axios';
 
 interface ProfileData {
     name: string;
@@ -37,6 +41,7 @@ interface ProfileData {
     qualification: string;
     profileImage: string | null;
     certificate: string | null;
+    linkedinSummary: string;
 }
 
 const initialData: ProfileData = {
@@ -49,6 +54,7 @@ const initialData: ProfileData = {
     qualification: '',
     profileImage: null,
     certificate: null,
+    linkedinSummary: '',
 };
 
 const InputField = ({ label, icon: Icon, placeholder, value, onChange, type = "text" }: any) => (
@@ -72,71 +78,136 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(true);
     const [data, setData] = useState<ProfileData>(initialData);
     const [isSaving, setIsSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'personal' | 'academic' | 'professional'>('personal');
+    const [activeTab, setActiveTab] = useState<'personal' | 'academic' | 'professional' | 'linkedin'>('personal');
+    const [isGeneratingLinkedin, setIsGeneratingLinkedin] = useState(false);
+    const [linkedinError, setLinkedinError] = useState<string>('');
 
-    // Load data from localStorage on mount
+    // Load data from backend on mount
     useEffect(() => {
-        const savedProfileStr = localStorage.getItem('user_profile_data');
-        const authInfoStr = localStorage.getItem('auth_user_info');
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem('auth_token');
+                if (!token) return;
 
-        let currentUserEmail = '';
-        let currentUserName = '';
+                const response = await axios.get('http://localhost:5000/api/user/profile', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
 
-        if (authInfoStr) {
-            const authInfo = JSON.parse(authInfoStr);
-            currentUserEmail = authInfo.email || '';
-            currentUserName = authInfo.name || '';
-        }
+                const backendData = response.data;
+                const authInfoStr = localStorage.getItem('auth_user_info');
+                const authUser = authInfoStr ? JSON.parse(authInfoStr) : {};
 
-        if (savedProfileStr) {
-            const parsedProfile = JSON.parse(savedProfileStr);
-            // Verify if the cached profile belongs to the currently logged in identity
-            if (parsedProfile.email === currentUserEmail) {
-                setData(parsedProfile);
-                setIsEditing(false);
-            } else {
-                // Mismatch found, indicating a different user session. Wipe and pre-fill clean.
                 setData({
                     ...initialData,
-                    name: currentUserName,
-                    email: currentUserEmail
+                    name: backendData.name || authUser.name || '',
+                    email: backendData.email || authUser.email || '',
+                    age: backendData.phone || '', // Using phone as age for now
+                    college: backendData.location || '',
+                    linkedinSummary: backendData.aboutMe || '',
+                    profileImage: backendData.profileImage 
+                        ? `http://localhost:5000/api/user/public/profile-image/${backendData._id}?v=${Date.now()}` 
+                        : null
                 });
-                setIsEditing(true);
+                
+                if (backendData.name) setIsEditing(false);
+            } catch (err) {
+                console.error('Fetch profile error:', err);
             }
-        } else if (authInfoStr) {
-            // New user scenario
-            setData({
-                ...initialData,
-                name: currentUserName,
-                email: currentUserEmail
-            });
-            setIsEditing(true);
-        }
+        };
+
+        fetchProfile();
     }, []);
 
     const handleSave = async () => {
         setIsSaving(true);
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        localStorage.setItem('user_profile_data', JSON.stringify(data));
-        setIsSaving(false);
-        setIsEditing(false);
-        router.push('/');
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                router.push('/login');
+                return;
+            }
+
+            // 1. Save text data
+            const profilePayload = {
+                name: data.name,
+                phone: data.age, // Mapping age field from UI to backend phone/age
+                location: data.college, // Mapping college to location for demo
+                aboutMe: data.linkedinSummary,
+                skills: [],
+                socialLinks: { linkedin: '', github: '', portfolio: '' }
+            };
+
+            await axios.put('http://localhost:5000/api/user/profile', profilePayload, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            localStorage.setItem('user_profile_data', JSON.stringify(data));
+            setIsEditing(false);
+            router.push('/');
+        } catch (err) {
+            console.error('Save profile error:', err);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            
+            // Local preview
             const reader = new FileReader();
             reader.onload = (event) => {
-                setData({ ...data, profileImage: event.target?.result as string });
+                setData(prev => ({ ...prev, profileImage: event.target?.result as string }));
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
+
+            // Upload to backend
+            try {
+                const token = localStorage.getItem('auth_token');
+                const formData = new FormData();
+                formData.append('profileImage', file);
+
+                await axios.post('http://localhost:5000/api/user/profile-image', formData, {
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            } catch (err) {
+                console.error('Image upload error:', err);
+            }
         }
     };
 
     const handleCertificateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setData({ ...data, certificate: e.target.files[0].name });
+        }
+    };
+
+    const generateLinkedinSummaryFromResume = async () => {
+        try {
+            setIsGeneratingLinkedin(true);
+            setLinkedinError('');
+            const resumeId = localStorage.getItem('currentResumeId');
+            if (!resumeId) {
+                setLinkedinError('Please upload a resume first to generate LinkedIn summary');
+                return;
+            }
+            const response = await axios.get(`http://localhost:5000/api/resumeAnalysis/${resumeId}`);
+            const aiResult = response.data.aiAnalysisResult?.linkedinSummary;
+            if (aiResult) {
+                setData({ ...data, linkedinSummary: aiResult });
+                setLinkedinError('');
+            } else {
+                setLinkedinError('No LinkedIn summary found in resume analysis');
+            }
+        } catch (err) {
+            setLinkedinError('Failed to fetch LinkedIn summary from resume analysis');
+            console.error('LinkedIn summary fetch error:', err);
+        } finally {
+            setIsGeneratingLinkedin(false);
         }
     };
 
@@ -226,7 +297,7 @@ export default function ProfilePage() {
                                     <div className="space-y-8">
                                         {/* Tabs */}
                                         <div className="flex gap-4 p-1.5 bg-white/5 rounded-2xl border border-white/5 mb-8">
-                                            {(['personal', 'academic', 'professional'] as const).map((tab) => (
+                                            {(['personal', 'academic', 'professional', 'linkedin'] as const).map((tab) => (
                                                 <button
                                                     key={tab}
                                                     onClick={() => setActiveTab(tab)}
@@ -235,7 +306,13 @@ export default function ProfilePage() {
                                                         : 'text-secondary hover:text-foreground hover:bg-white/5'
                                                         }`}
                                                 >
-                                                    {tab}
+                                                    {tab === 'linkedin' ? (
+                                                        <span className="flex items-center justify-center gap-1">
+                                                            <Linkedin size={13} /> {tab}
+                                                        </span>
+                                                    ) : (
+                                                        tab
+                                                    )}
                                                 </button>
                                             ))}
                                         </div>
@@ -330,6 +407,64 @@ export default function ProfilePage() {
                                                         />
                                                     </>
                                                 )}
+
+                                                {activeTab === 'linkedin' && (
+                                                    <div className="space-y-6">
+                                                        <div>
+                                                            <label className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] ml-2 mb-4 flex items-center gap-2">
+                                                                <Linkedin size={14} className="text-accent" /> LinkedIn Professional Summary
+                                                            </label>
+                                                            <textarea
+                                                                value={data.linkedinSummary}
+                                                                onChange={(e) => setData({ ...data, linkedinSummary: e.target.value })}
+                                                                placeholder="Your LinkedIn summary will appear here. Click 'Generate from Resume' to auto-populate or write/edit it manually."
+                                                                className="w-full h-48 p-6 rounded-2xl bg-white/5 border border-white/10 focus:border-accent/50 focus:ring-2 focus:ring-accent/30 outline-none text-foreground font-medium resize-none transition-all hover:bg-white/8"
+                                                            />
+                                                            <p className="text-xs text-secondary mt-2 ml-2">
+                                                                Pro tip: LinkedIn summaries work best at 120-220 characters. Current: {data.linkedinSummary.length} characters
+                                                            </p>
+                                                        </div>
+
+                                                        {linkedinError && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: -10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                className="p-4 rounded-xl bg-red-500/10 border border-red-500/30"
+                                                            >
+                                                                <p className="text-xs font-black text-red-400 uppercase tracking-widest">{linkedinError}</p>
+                                                            </motion.div>
+                                                        )}
+
+                                                        <button
+                                                            onClick={generateLinkedinSummaryFromResume}
+                                                            disabled={isGeneratingLinkedin}
+                                                            className="w-full h-14 px-6 rounded-2xl bg-accent/20 border border-accent/50 text-accent font-black uppercase tracking-widest text-xs hover:bg-accent/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                                        >
+                                                            {isGeneratingLinkedin ? (
+                                                                <>
+                                                                    <Loader2 size={16} className="animate-spin" />
+                                                                    Generating...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Wand2 size={16} />
+                                                                    Generate from Resume Analysis
+                                                                </>
+                                                            )}
+                                                        </button>
+
+                                                        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                                                            <p className="text-xs font-black text-blue-400 uppercase tracking-widest mb-2">📌 LinkedIn Best Practices</p>
+                                                            <ul className="text-xs text-secondary space-y-1">
+                                                                <li>• Use 1-2 sentences for maximum impact</li>
+                                                                <li>• Highlight your unique value proposition</li>
+                                                                <li>• Include keywords relevant to your industry</li>
+                                                                <li>• Be authentic and professional</li>
+                                                                <li>• Update regularly as you progress</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </motion.div>
                                         </AnimatePresence>
 
@@ -395,6 +530,16 @@ export default function ProfilePage() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {data.linkedinSummary && (
+                                            <div className="mt-8 p-6 rounded-2xl bg-blue-500/10 border border-blue-500/30">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <Linkedin size={18} className="text-blue-400" />
+                                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">LinkedIn Professional Summary</p>
+                                                </div>
+                                                <p className="text-sm text-foreground leading-relaxed">{data.linkedinSummary}</p>
+                                            </div>
+                                        )}
 
                                         <div className="pt-8 flex flex-col items-center justify-center p-8 bg-white/5 rounded-3xl border border-white/5 space-y-4">
                                             <p className="text-secondary font-medium text-center italic">"Your professional narrative is now circulating through the core indices."</p>

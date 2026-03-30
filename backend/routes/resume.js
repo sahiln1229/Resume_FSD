@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { uploadResume, getResumeAnalysis } = require('../controllers/resumeController');
+const { uploadResume, getResumeAnalysis, downloadResume } = require('../controllers/resumeController');
 
 // Ensure tmp directory exists
 const tmpDir = path.join(__dirname, '../tmp');
@@ -42,5 +42,6 @@ const upload = multer({
 // Define routes
 router.post('/uploadResume', upload.single('resume'), uploadResume);
 router.get('/resumeAnalysis/:id', getResumeAnalysis);
+router.get('/resumeDownload/:id', downloadResume);
 
 module.exports = router;

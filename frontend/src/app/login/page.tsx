@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Cpu,
@@ -8,8 +8,6 @@ import {
     Lock,
     User,
     ArrowRight,
-    Github,
-    Chrome,
     Sparkles,
     ShieldCheck
 } from 'lucide-react';
@@ -19,7 +17,7 @@ import { Button } from '@/components/ui/Button';
 import Scene3D from '@/components/3d/Scene3D';
 import Magnetic from '@/components/ui/Magnetic';
 import PerspectiveCard from '@/components/ui/PerspectiveCard';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 
@@ -34,6 +32,7 @@ export default function LoginPage() {
 
     const [error, setError] = useState('');
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,6 +80,8 @@ export default function LoginPage() {
             setIsProcessing(false);
         }
     };
+
+
 
     return (
         <main className="min-h-screen pt-40 pb-20 px-6 relative overflow-hidden bg-transparent">
@@ -210,25 +211,7 @@ export default function LoginPage() {
                                     </Button>
                                 </Magnetic>
 
-                                <div className="relative py-4">
-                                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border"></div></div>
-                                    <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]"><span className="bg-[#111827] px-4 text-secondary/50">OR CONTINUE WITH</span></div>
-                                </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Magnetic>
-                                        <button className="w-full h-14 bg-white/5 border border-border rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
-                                            <Github size={20} className="text-foreground" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">Github</span>
-                                        </button>
-                                    </Magnetic>
-                                    <Magnetic>
-                                        <button className="w-full h-14 bg-white/5 border border-border rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
-                                            <Chrome size={20} className="text-foreground" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">Google</span>
-                                        </button>
-                                    </Magnetic>
-                                </div>
                             </motion.div>
                         </AnimatePresence>
                     </Card>

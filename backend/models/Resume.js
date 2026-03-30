@@ -26,6 +26,14 @@ const resumeSchema = new mongoose.Schema({
     aiAnalysisResult: {
         type: Object, // Will store the JSON structure returned by Gemini
         default: null
+    },
+    fileData: {
+        type: Buffer, // Storing original binary file
+        required: false
+    },
+    fileType: {
+        type: String, // Storing original MIME type
+        required: false
     }
 });
 

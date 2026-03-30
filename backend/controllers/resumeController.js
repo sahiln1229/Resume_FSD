@@ -2,6 +2,7 @@ const Resume = require('../models/Resume');
 const { extractTextFromFile } = require('../services/fileParser');
 const { analyzeResumeWithAI } = require('../services/aiService');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 // In-memory fallback if MONGODB_URI is not provided
 const fallbackStorage = new Map();
@@ -23,7 +24,9 @@ const uploadResume = async (req, res) => {
             uploadedFileName: req.file.originalname,
             resumeText: 'Parsing...',
             analysisStatus: 'analyzing',
-            aiAnalysisResult: null
+            aiAnalysisResult: null,
+            fileData: fs.readFileSync(req.file.path), // Save the actual file binary
+            fileType: req.file.mimetype
         };
 
         if (isDbConnected()) {
@@ -126,7 +129,32 @@ const getResumeAnalysis = async (req, res) => {
     }
 };
 
+/**
+ * Download the original resume file
+ */
+const downloadResume = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resume = await Resume.findById(id);
+
+        if (!resume || !resume.fileData) {
+            return res.status(404).json({ error: 'Resume file not found' });
+        }
+
+        res.set({
+            'Content-Type': resume.fileType || 'application/pdf',
+            'Content-Disposition': `attachment; filename="${resume.uploadedFileName}"`
+        });
+
+        res.send(resume.fileData);
+    } catch (error) {
+        console.error("Download error:", error);
+        res.status(500).json({ error: 'Server error while downloading' });
+    }
+};
+
 module.exports = {
     uploadResume,
-    getResumeAnalysis
+    getResumeAnalysis,
+    downloadResume
 };
